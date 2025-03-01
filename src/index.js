@@ -4,8 +4,11 @@ import { userRouter } from './routes/userRoutes.js';
 import { feedbackRouter } from './routes/feedbackRoutes.js';
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import dotenv from 'dotenv'
+dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT;
 db();
 
 app.use(cors());
@@ -21,13 +24,6 @@ app.get("/", (req, res)=>{
     res.send("Running")
 })
 
-app.post("/", (req, res)=>{
-    console.log(req.body.feedback)
-    res.json({
-        msg: "Done"
-    })
-})
-
-app.listen(3000, ()=>{
-    console.log("Running on 3000")
+app.listen(PORT, ()=>{
+    console.log("Running")
 })

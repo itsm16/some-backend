@@ -37,8 +37,6 @@ userRouter.post("/login", async (req, res)=>{
             message: "Invalid credentials"
         })}
 
-        console.log(user._id);
-
         // user._id returns new objecId ()
         const token = await jwt.sign( {id: user._id}, process.env.SECRET); // pass id this way {id: user._id}, instead of (user.id, secret)
         res.cookie("token", token, {
