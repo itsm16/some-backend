@@ -13,6 +13,13 @@ userRouter.post("/signup", async (req, res)=>{
         await userModel.create({
             name, email, password: hashedPassword
         })
+
+        const token = await jwt.sign( {id: user._id}, process.env.SECRET); // pass id this way {id: user._id}, instead of (user.id, secret)
+        
+        res.cookie("token", token, {
+            maxAge: 60000 * 60 * 24 * 5,
+            httpOnly: true
+        })
         
         res.json({
             message: "User created"
