@@ -1,7 +1,7 @@
 import express from 'express'
-import { db } from './db.js';
-import { userRouter } from './routes/userRoutes.js';
-import { feedbackRouter } from './routes/feedbackRoutes.js';
+import { db } from './src/db.js';
+import { userRouter } from './src/routes/userRoutes.js';
+import { feedbackRouter } from './src/routes/feedbackRoutes.js';
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
