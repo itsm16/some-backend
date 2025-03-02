@@ -1,6 +1,6 @@
 import { Router } from "express";
 import jwt from 'jsonwebtoken'
-import { userModel } from "../models/user.model.js"; // .js
+import { userModel } from "../models/user.model.js";
 import bcrypt from 'bcrypt'
 
 const userRouter = Router();
@@ -31,21 +31,21 @@ userRouter.post("/signup", async (req, res)=>{
 
 userRouter.post("/login", async (req, res)=>{
     const {email, password} = req.body;
+    console.log(email)
     try {
         const user = await userModel.findOne({email});
 
-        if(!user){res.json({
+        if(!user){ return res.status(404).json({
             message: "Not found"
         })}
 
         const isMatch = await bcrypt.compare(password, user.password)
 
-        if(!isMatch){res.json({
+        if(!isMatch){ return res.status(404).json({
             message: "Invalid credentials"
         })}
 
-        // user._id returns new objecId ()
-        const token = await jwt.sign( {id: user._id}, process.env.SECRET); // pass id this way {id: user._id}, instead of (user.id, secret)
+        const token = await jwt.sign( {id: user._id}, process.env.SECRET);
         res.cookie("token", token, {
             maxAge: 60000 * 60 * 24 * 5,
             httpOnly: true
@@ -56,7 +56,7 @@ userRouter.post("/login", async (req, res)=>{
         res.json({
             state : "Logged in",
             message: `Welcome ${user.name}`,
-            user: {id: user.id, name: user.name, email: user.email }
+            user: { name: user.name, email: user.email }
         })
 
     } catch (error) {
@@ -64,16 +64,28 @@ userRouter.post("/login", async (req, res)=>{
     }
 })
 
-// now while visiting
+// new session
 
-{/*
-userRouter.post("/get-cookie", (req, res)=>{
-    const token = jwt.sign(email, "shhh")
-    res.cookie("cookieName", token, {maxAge: 60000 * 60 * 24 * 5, httpOnly: true});
-    res.json({
-        msg: "Runs"
+userRouter.get("/user", async (req, res)=>{
+    const {token} = req.cookies;
+    
+    if (!token) {return res.json({message: "Not found, Login to give feedback"})}
+    
+    const verifiedToken = await jwt.verify(token, process.env.SECRET);
+        // console.log("id: ", verifiedToken.id);
+    
+    if (!verifiedToken) {return res.json({message: "Invalid user"})}
+    
+    const user = await userModel.findById(verifiedToken.id)
+        // console.log("middleware: ", user)
+
+    return res.json({
+        message: "User Exists",
+        user: { name: user.name, email: user.email }
     })
 })
+
+{/*
 
 userRouter.get("/check-cookie", (req, res)=>{
     const {cookieName} = req.cookies;

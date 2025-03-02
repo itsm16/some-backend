@@ -1,7 +1,7 @@
 import {model, Schema} from 'mongoose'
 
 const feedbackSchema = Schema({
-    user_name: {
+    name: {
         type: String,
         required: false
     },

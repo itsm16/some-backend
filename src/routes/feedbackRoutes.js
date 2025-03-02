@@ -6,7 +6,7 @@ import { userModel } from '../models/user.model.js';
 const feedbackRouter = Router();
 
 
-feedbackRouter.get("/feedbacks", async (req, res)=>{
+feedbackRouter.get("/feedback", async (req, res)=>{
     const allFeedbacks = await feedbackModel.find();
     res.json({
         allFeedbacks: allFeedbacks
@@ -16,32 +16,32 @@ feedbackRouter.get("/feedbacks", async (req, res)=>{
 const checkToken = async (req, res, next) => {
     const {token} = req.cookies;
 
-    if (!token) {res.json({message: "Not found, Login to give feedback"})}
+    if (!token) {return res.json({message: "Not found, Login to give feedback"})}
 
     const verifiedToken = await jwt.verify(token, process.env.SECRET);
-    // console.log("id: ", verifiedToken.id);
 
-    if (!verifiedToken) {res.json({message: "Invalid user"})}
+    if (!verifiedToken) {return res.json({message: "Invalid user"})}
 
     const user = await userModel.findById(verifiedToken.id)
-    // console.log("middleware: ", user)
 
     req.user = user;
-    // console.log("User: ", req.user);
+
     next();
 }
 
 feedbackRouter.post("/feedback", checkToken, async (req, res)=>{
-    // console.log("From route: ", req.user);
+
     const {name, email, title, description} = req.body;
+    if (!title | !description) {
+        return res.json({message: "Couldn't record feedback"})
+    }
 
     try {
         const createFeedback = await feedbackModel.create({
-            user_name: name, email, title, description
+            name, email, title, description
         })
     } catch (error) {
-        throw error
-        res.json({
+        return res.json({
             message: "Something went wrong"
         })
     }
