@@ -16,11 +16,11 @@ feedbackRouter.get("/feedback", async (req, res)=>{
 const checkToken = async (req, res, next) => {
     const {token} = req.cookies;
 
-    if (!token) {return res.json({message: "Not found, Login to give feedback"})}
+    if (!token) {return res.json({message: "Not found, Login to give feedback", user: { name: null, email: null }})}
 
     const verifiedToken = await jwt.verify(token, process.env.SECRET);
 
-    if (!verifiedToken) {return res.json({message: "Invalid user"})}
+    if (!verifiedToken) {return res.json({message: "Invalid user", user: { name: null, email: null }})}
 
     const user = await userModel.findById(verifiedToken.id)
 

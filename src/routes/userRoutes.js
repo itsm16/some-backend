@@ -36,13 +36,15 @@ userRouter.post("/login", async (req, res)=>{
         const user = await userModel.findOne({email});
 
         if(!user){ return res.status(404).json({
-            message: "Not found"
+            message: "Not found",
+            user: { name: null, email: null }
         })}
 
         const isMatch = await bcrypt.compare(password, user.password)
 
         if(!isMatch){ return res.status(404).json({
-            message: "Invalid credentials"
+            message: "Invalid credentials",
+            user: { name: null, email: null }
         })}
 
         const token = await jwt.sign( {id: user._id}, process.env.SECRET);
@@ -69,12 +71,12 @@ userRouter.post("/login", async (req, res)=>{
 userRouter.get("/user", async (req, res)=>{
     const {token} = req.cookies;
     
-    if (!token) {return res.json({message: "Not found, Login to give feedback"})}
+    if (!token) {return res.json({message: "Not found, Login to give feedback", user: { name: null, email: null }})}
     
     const verifiedToken = await jwt.verify(token, process.env.SECRET);
         // console.log("id: ", verifiedToken.id);
     
-    if (!verifiedToken) {return res.json({message: "Invalid user"})}
+    if (!verifiedToken) {return res.json({message: "Invalid user", user: { name: null, email: null }})}
     
     const user = await userModel.findById(verifiedToken.id)
         // console.log("middleware: ", user)
