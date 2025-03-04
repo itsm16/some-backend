@@ -48,6 +48,7 @@ userRouter.post("/login", async (req, res)=>{
         })}
 
         const token = await jwt.sign( {id: user._id}, process.env.SECRET);
+        
         res.cookie("token", token, {
             maxAge: 60000 * 60 * 24 * 5,
             httpOnly: true
@@ -58,7 +59,7 @@ userRouter.post("/login", async (req, res)=>{
         res.json({
             state : "Logged in",
             message: `Welcome ${user.name}`,
-            user: { name: user.name, email: user.email }
+            user: { name: user.name, email: user.email, token }
         })
 
     } catch (error) {
@@ -68,8 +69,11 @@ userRouter.post("/login", async (req, res)=>{
 
 // new session
 
-userRouter.get("/user", async (req, res)=>{
+userRouter.post("/user", async (req, res)=>{
+    // same as checkToken middleware
+
     const {token} = req.cookies;
+    console.log(token);
     
     if (!token) {return res.json({message: "Not found, Login to give feedback", user: { name: null, email: null }})}
     
