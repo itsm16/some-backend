@@ -18,7 +18,9 @@ userRouter.post("/signup", async (req, res)=>{
         
         res.cookie("token", token, {
             maxAge: 60000 * 60 * 24 * 5,
-            httpOnly: true
+            httpOnly: true,
+            secure: true,
+            sameSite: "None"
         })
         
         res.json({
