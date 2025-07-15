@@ -1,7 +1,6 @@
 import { Router } from "express";
 import jwt from 'jsonwebtoken'
 import { userModel } from "../models/user.model.js";
-import {projectModel} from '../models/project.model.js'
 import bcrypt from 'bcrypt'
 
 const userRouter = Router();
@@ -109,30 +108,5 @@ userRouter.get("/check-cookie", (req, res)=>{
     }
 })
 */}
-
-// project
-userRouter.post("/createProject",async (req, res)=>{
-    const {project_name, project_description} = req.body;
-
-    try {
-        const query = await projectModel.create({project_name, project_description})
-
-    return res.json({
-        message: "created successfully"
-    })
-    } catch (error) {
-        res.json({
-            message: error
-        })
-    }
-})
-
-userRouter.get("/projects", async (req, res)=>{
-    try {
-        const query = await projectModel.find()
-    } catch (error) {
-        
-    }
-})
 
 export {userRouter};
